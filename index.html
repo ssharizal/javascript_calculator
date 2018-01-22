@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<title> JavaScript Calculator</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Coder : Syed Sharizal
+* can add, subtract, multiply and divide two numbers.
+* can clear the input field with a clear button.
+* can keep chaining mathematical operations together until I hit the equal button, 
+and the calculator will tell me the correct output.
+-->
+
+<head>
+    <!-- Bootstrap, fontawesome, jQuery-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        body {
+            background: #505050;
+        }
+        
+        #calculator {
+            width: 400px;
+            background: #505050;
+            margin: 10px auto;
+            font-family: Arial;
+            overflow: hidden;
+        }
+        
+        .screen {
+            height: 70px;
+            width: 95%;
+            color: #F0F0F0;
+            font-size: 50px;
+            line-height: 70px;
+            text-align: right;
+            overflow: hidden;
+            padding: 5px;
+        }
+        
+        #keypad li {
+            list-style-type: none;
+            width: 25%;
+            height: 70px;
+            background: #E0E0E0;
+            float: left;
+            text-align: center;
+            line-height: 70px;
+            border: 1px solid #000000;
+        }
+        
+        #keypad .extend {
+            width: 50%;
+        }
+        
+        #keypad .symbol {
+            background: #fba01f;
+            color: white;
+            font-size: 30px;
+            border-right: none;
+        }
+        
+        #keypad .symbolTop {
+            background: #B8B8B8;
+            color: white;
+            font-size: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="jumbotron">
+        <h1 class="display-3"> <i class="fa fa-calculator fa-6" aria-hidden="true"></i> JavaScript Calculator </h1>
+        <p class="lead">Written in Pure JavaScript</p>
+    </div>
+
+
+    <div id="calculator">
+
+        <div class="screen">0</div>
+
+        <div id="keypad">
+            <ul>
+                <li class="symbolTop">C</li>
+                <li class="symbolTop">+/-</li>
+                <li class="symbolTop">%</li>
+                <li class="symbol">/</li>
+                <li>7</li>
+                <li>8</li>
+                <li>9</li>
+                <li class="symbol">x</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+                <li class="symbol">-</li>
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li class="symbol">+</li>
+                <li class="extend">0</li>
+                <li>.</li>
+                <li class="symbol">=</li>
+
+            </ul>
+
+        </div>
+    </div>
+
+    <script>
+        var btns = document.getElementById('keypad');
+        var inputs = [];
+        var hold = [];
+
+        //Internet Explorer doesn't pass event to handler. Instead you can use window.event object
+        function getEventTarget(e) {
+            e = e || window.event;
+            // also there is no e.target property in IE.
+            // instead IE uses window.event.srcElement
+            return e.target || e.srcElement;
+        }
+
+        btns.onclick = function(event) {
+            //Get Target
+            var target = getEventTarget(event);
+
+            // Get the screen and button values
+            var screen = document.querySelector('.screen');
+            var screenVal = screen.innerHTML;
+            var btnVal = target.innerHTML;
+
+            //remove prefix 0
+            if (screenVal === '0' && btnVal != '.') {
+
+                screen.innerHTML = '';
+            }
+
+
+            var calculate = screenVal;
+
+            // If clear is pressed
+            if (btnVal == 'C') {
+                screen.innerHTML = '0';
+                inputs = [];
+            }
+
+            // If +/- is pressed (make value negative or positive)
+            else if (btnVal == '+/-') {
+
+                if (hold[0] === undefined) {
+                    screen.innerHTML = '-' + calculate;
+                    hold.push('-' + calculate);
+                } else {
+                    calculate = calculate.replace(/-/g, '');
+                    screen.innerHTML = calculate;
+                    hold = [];
+                }
+
+            }
+
+            // If / pressed
+            else if (btnVal == '/') {
+
+                if (calculate != '0') {
+                    inputs.push(calculate);
+                    if (calculate === '' && inputs[3] === undefined) {
+                        inputs[1] = '/';
+                    } else {
+
+                        inputs.push('/');
+                    }
+                    screen.innerHTML = '';
+                } else {
+                    inputs[1] = '/';
+                }
+            }
+
+            // If x is pressed
+            else if (btnVal == 'x') {
+                if (calculate !== '0') {
+                    inputs.push(calculate);
+                    if (calculate === '' && inputs[3] === undefined) {
+                        inputs[1] = '*';
+                    } else {
+
+                        inputs.push('*');
+                    }
+                    screen.innerHTML = '';
+                } else {
+                    inputs[1] = '*';
+                }
+            }
+
+            // If - is pressed
+            else if (btnVal == '-') {
+
+                if (calculate == '0') {
+
+                    screen.innerHTML = '-';
+
+                } else {
+                    inputs.push(calculate);
+                    if (calculate === '' && inputs[3] === undefined) {
+                        inputs[1] = '-';
+                    } else {
+
+                        inputs.push('-');
+                    }
+                    screen.innerHTML = '';
+
+                }
+            }
+            // If + is pressed
+            else if (btnVal == '+') {
+
+                if (calculate != '0') {
+
+                    inputs.push(calculate);
+                    if (calculate === '' && inputs[3] === undefined) {
+                        inputs[1] = '+';
+                    } else {
+
+                        inputs.push('+');
+                    }
+
+                    screen.innerHTML = '';
+
+                } else {
+                    inputs[1] = '+';
+                }
+            }
+
+            // If = is pressed calculate the answer
+            else if (btnVal == '=') {
+
+                inputs.push(calculate);
+                calculate = inputs.toString();
+
+                var lastChar = calculate[calculate.length - 1];
+
+                // Replace x with * and , with ''.
+                calculate = calculate.replace(/x/g, '*').replace(/,/g, '');
+
+                //remove . if it is the last character
+                if (lastChar == '.') {
+                    calculate = calculate.replace(/./, '');
+                }
+
+                //calculate percent
+                if (lastChar == '%') {
+                    var getNum = inputs[0].toString();
+                    var getSy = inputs[1].toString();
+                    var getPar = inputs[2].toString();
+                    getPar = getPar.replace(/%/g, '');
+
+                    var calculatePar = getPar / "100" * getNum;
+                    calculate = getNum + getSy + calculatePar;
+
+                }
+
+                //clear inputs for next calculation
+                inputs = [];
+
+                if (calculate) {
+                    var answer = eval(calculate);
+
+                    if (answer.toFixed(2) === answer + ".00") {
+                        screen.innerHTML = answer;
+                    } else {
+                        screen.innerHTML = answer.toFixed(2);
+                    }
+
+                }
+            }
+
+            // if any other key is pressed
+            else {
+                screen.innerHTML += btnVal;
+
+            }
+
+        };
+    </script>
+</body>
+
+</html>
